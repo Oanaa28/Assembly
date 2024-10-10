@@ -1,0 +1,94 @@
+Tema 3 - Documentatie
+Realizata de : Dima Oana-Mihaela 311CB
+
+Task 1
+Pentru acest task, am utilizat stiva pentru a verifica parantezarea corecta.
+Astfel, in cadrul etichetei verificare_paranteza salvez caracter cu caracter din sir 
+in registrul bl si verific daca am ajuns la finalul sirului. Daca nu am ajuns, verific ce tip de 
+parantezam am in registrul bl:
+Pentru fiecare tip de paranteza posibil am cate o eticheta corespunzatoare
+in care verific tipul de paranteza. 
+Pentru parantezele deschise:
+- Daca pozitia la care ma aflu in sir contine paranteaza cautata, o pun pe stiva si trec la urmatorul tip de paranteza,
+sarind iar la inceputul cautarii, daca nu este paranteza cautata, trec la urmatoarea 
+verificare.
+Pentru parantezele inchise:
+- Daca pozitia la care ma aflu in sir contine paranteaza cautata, verific 
+daca stiva mea e goala. 
+- daca e goala merg la eticheta continuare care imi pune in registrul eax valoarea
+1 pentru a semnifica faptul ca parantezarea este incorecta
+- daca nu e goala (ecx diferit de 0) scot de pe stiva ultima paranteza,
+verific daca este corespunzatoare celei inchise, daca nu, trec la eticheta 
+parantezare_incorecta, iar daca da trec la urmatoarea cautare in sir
+Odata ajuns la ultimul caracter din sir, pun registrii pe stiva si pun 0 
+in registrul eax(parantezarea este corecta).
+Daca insa nu a fost o parantezare corecta, verific daca stiva este goala, iar in cazul
+in care nu, o golesc si returnez prin registrul eax valoarea 1(parantezare incorecta).
+
+Task 2
+
+subtask_1
+Functia quick_sort :
+Pentru acest task am retinut in registrii urmatori parametrii frunctiei quick_sort:
+- in edx am salvat adresa primului elemnt din vectorul buff
+- in ebx am salvat pozitia de start(al doilea parametru al functiei)
+- in ecx am salvat pozitia de end(al treilea parametru al functiei)
+am comparat initial pozitia de start cu cea de final, iar daca start>=end am 
+ajuns la finalul sortarii.
+Daca start < end, apelez functia auxiliara partition pentru a salva in registrul eax
+pivotul. Folosesc acest pivot apoi pentru a apela recursiv functia quick_sort astfel:
+quick_sort(buff, start, pi - 1)
+quick_sort(buff, pi + 1, end)
+
+Functia partition :
+Am accesat valorile transmise prin parametri si le am salvat in registri:
+- edx = buff
+- ecx = start
+- ebx = end
+am salvat apoi in registrul edi valoarea pivotului (buff[end]) 
+am salvat in eax pozitia start-1 si am parcurs vectorul buff
+odata ce gasesc o valoare in vector mai mare decat valoarea salvata in pivot
+incrementez eax-ul si interschimb valorile lui buff[i] si buff[j]
+    push ebx
+    xor ebx, ebx
+    ;buff[i]
+    mov ebx, [edx + eax * 4]
+    ;swap
+    push esi
+    push ebx
+
+    pop esi
+    pop ebx
+    ;4 = size of int
+    mov [edx + eax * 4], ebx
+    ;4 = size of int
+    mov [edx + ecx * 4], esi
+
+    pop ebx
+    ebx-ul este utilizat aici doar pentru interschimbare si de aceea ii salvez mai intai valoarea
+    pe stiva si o restaurez la finalul interschimbarii
+La finalul parcurgeri vectorului functia partition realizeaza interschimbarea 
+intre buff[i + 1] si buff[end] si retuneaza i + 1 in registrul eax
+
+subtask_2
+Functia binary_search :
+In aceasta functie primii 2 parametri corespund implicit lui ecx si edx asadar:
+- in ecx este salvat vectorul buff
+- in edx parametrul needle (numarul cautat)
+- in ebx am pus pozitia de start
+- in esi am pus pozitia de end
+daca end < start, am terminat cautarea si pun in registrul eax valoarea -1, 
+valoare ce va fi returnata de functie (nu am gasit numarul cautat in vector)
+daca end >= start salvez in registrul edi pozitia de mijloc determinata cu formula:
+mid = start + (end - start) / 2
+compar valoarea de pe aceasta pozitie cu valoarea cautata:
+- daca sunt egale inseamna ca am gasit numarul cautat si inchei functia
+- daca valoarea cautata este mai mica decat buff[mid] =>
+    => trebuie sa caut valoarea mai in stanga deoarece vectorul este ordonat crescator
+    - pt a realiza acest lucru apelez functia recursiva astfel
+    binary_search(buff, needle, start, mid - 1)
+- daca valoarea cautata este mai mare decat buff[mid] =>
+    => trebuie sa caut valoarea mai in dreapta 
+    - pt a realiza acest lucru apelez functia recursiva astfel
+        binary_search(buff, needle, mid + 1, end)
+prin apelurile recursive continui cautarea, iar daca gasesc valoarea cautata ii returnez pozitia.(salvata in eax)
